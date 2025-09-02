@@ -49,7 +49,7 @@ func tasksGet(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write(resp)
+	w.Write(resp)
 }
 
 func tasksPost(w http.ResponseWriter, r *http.Request) {
@@ -57,12 +57,12 @@ func tasksPost(w http.ResponseWriter, r *http.Request) {
 	var buf bytes.Buffer
 	_, err := buf.ReadFrom(r.Body)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	err = json.Unmarshal(buf.Bytes(), &task)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
@@ -79,12 +79,12 @@ func taskGet(w http.ResponseWriter, r *http.Request) {
 	}
 	resp, err := json.Marshal(task)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write(resp)
+	w.Write(resp)
 }
 
 func taskDelete(w http.ResponseWriter, r *http.Request) {
@@ -95,6 +95,7 @@ func taskDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	delete(tasks, id)
+	w.WriteHeader(http.StatusOK)
 }
 
 func main() {
